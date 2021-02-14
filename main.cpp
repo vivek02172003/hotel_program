@@ -1,8 +1,6 @@
 //Vivek Bhandari
 //ICS4U Summative
-//November 12th, 2020
-#include <iostream>
-using namespace std;
+//November 12th, 2020#include <iostream>
 #include <ctime>
 #include <stdlib.h>
 #include <ctime>
@@ -12,18 +10,15 @@ using namespace std;
 #include <sstream>
 #include <iomanip>
 
-struct HOTEL //declared a strcture to store multiple variables of different types used in the program
-{
+using namespace std;
+
+class Hotel {
     int option, rooms;
-    int random;
-    string date, name, pin;
-};
-void totals (double *tot, char *type, int *people); //void function to calculate the total cost of the room per night
-void totals (double *tot); //void function to add tax to the final cost of the room per night (function overload)
-void pay(double *amount); //void function to receive payment from customer
-int main()
-{
+    int randoms;
+    string dates, name, pin;
+
     int vactot=0; //int variable to store number of rooms that are either booked or checked into (unavailable rooms)
+    double tot=0;
     char type;
     int people;
     vector<int>random; //array to store booking pin
@@ -31,32 +26,60 @@ int main()
     vector<int>peoples; //array to store number of people per room
     vector<string>date; //array to store checkin date
     vector<double>total; //array to store cost of room per night
-    HOTEL hotel;
-    srand (time(NULL));
-    hotel.random=rand() % 999 + 100; //generates a random number when giving customers their booking pin
-    start:
-    double tot=0;
-    ofstream obj13;
-    obj13.open("vacant.txt",ios::app); //creates a file to store number of rooms that are either booked or checked into (unavailable rooms)
-    obj13.close();
-    cout<<"--------------------------------------"<<endl; //diaplays options to user
-    cout<<"\t     Vivek's Hotel"<<endl;
-    cout<<"--------------------------------------"<<endl;
-    cout<<"1. Book A Room"<<endl;
-    cout<<"2. Check In"<<endl;
-    cout<<"3. Check Out"<<endl;
-    cout<<"4. Cancel Booking"<<endl;
-    cout<<"5. End Session"<<endl;
-    cout<<"--------------------------------------"<<endl;
-    cout<<"Please select one of the options above"<<endl;
-    cin>>hotel.option; //stores what option the user selected
-    cin.ignore(); //flushes the stream
-    if (hotel.option==1) //if statement that executes if if the user wants to book a room (entered 1)
-    {
-        cout<<"Enter Your Name"<<endl;
-        getline(cin,hotel.name); //stores users name
+
+
+public:
+    Hotel() {
+        randoms = rand() % 999 + 100; //generates a random number when giving customers their booking pin
+    };
+    void totals (double *tot, char *type, int *people); //void function to calculate the total cost of the room per night
+    void totals (double *tot); //void function to add tax to the final cost of the room per night (function overload)
+    void pay(double *amount); //void function to receive payment from customer
+    void display();
+    void book();
+    void checkin();
+    void checkout();
+    void cancel();
+    void exitHotel();
+};
+
+void Hotel::display() {
+    while (true) {
+        cout<<"--------------------------------------"<<endl; //diaplays options to user
+        cout<<"\t     Vivek's Hotel"<<endl;
+        cout<<"--------------------------------------"<<endl;
+        cout<<"1. Book A Room"<<endl;
+        cout<<"2. Check In"<<endl;
+        cout<<"3. Check Out"<<endl;
+        cout<<"4. Cancel Booking"<<endl;
+        cout<<"5. End Session"<<endl;
+        cout<<"--------------------------------------"<<endl;
+        cout<<"Please select one of the options above"<<endl;
+        cin>>option; //stores what option the user selected
+        cin.ignore(); //flushes the stream
+        if (option==1) {
+            book();
+        } else if (option==2) {
+            checkin();
+        } else if (option==3) {
+            checkout();
+        } else if (option==4) {
+            cancel();
+        } else if (option==5) {
+            exitHotel();
+            break;
+        } else {
+            cout<<"Sorry, please enter a valid option"<<endl;
+        }
+    }
+
+}
+
+void Hotel::book() {
+    cout<<"Enter Your Name"<<endl;
+        getline(cin,name); //stores users name
         cout<<"How many rooms would you like to book"<<endl;
-        cin>>hotel.rooms; //stores number of rooms the user wants to book
+        cin>>rooms; //stores number of rooms the user wants to book
         string line3;
         ifstream obj14;
         obj14.open("vacant.txt",ios::in); //opens vacant.txt file to read from
@@ -68,21 +91,21 @@ int main()
                 result3.push_back(line3);
                 vactot=stoi(result3[0]); //sets vactot to the number of rooms that are either booked or checked into (unavailable rooms) which is the value in the [0] index in result3 array
         }
-        vactot=vactot+hotel.rooms; //adds the number of rooms the user booked to vactot
+        vactot=vactot+rooms; //adds the number of rooms the user booked to vactot
         if (vactot>10)// if statement that executes the user trys to book more rooms than there are available (there are 10 aviliable rooms at the start)
         {
-            vactot=vactot-hotel.rooms; ////subtracts the number of rooms the user booked to vactot as there arent that many rooms available
+            vactot=vactot-rooms; ////subtracts the number of rooms the user booked to vactot as there arent that many rooms available
             cout<<"Sorry, we only have "<<10-vactot<<" rooms available."<<endl; //displays sorry message
             system("pause"); //pauses program (press any key to continue)
             system("cls"); //clears screen
 
-            goto start; //jump statemnt that sends the user back to the start of the program
+            return;
         }
 
 
         ofstream obj1;
         obj1.open("Bookings.txt",ios::app); //opens the Bookings.txt to write in
-        for (int i=0; i<hotel.rooms; i++) //for loop that repeats based on the number of rooms the user wants to book
+        for (int i=0; i<rooms; i++) //for loop that repeats based on the number of rooms the user wants to book
         {
             tot=0;
             roomtype:
@@ -111,17 +134,17 @@ int main()
             peoples.push_back(people); //pushes back the number of people in the room into the peoples array
             total.push_back(tot); //pushes back total after tax into the total array
             cout<<"What date will you be checking into this room (MM/DD/YYYY)"<<endl;
-            cin>>hotel.date; //stores the date that the user will be checing into their room
-            date.push_back(hotel.date); //pushes back the date that the user will be checing into their room into the total date
-            hotel.random++; //incriments pin number so that no room is assignmed the same pin number
-            cout<<"Thank you for booking a room at Vivek's Hotel! Please enter this pin ("<<hotel.random<<") when you are checking in"<<endl; //displays thank you message
-            random.push_back(hotel.random); //pushes back the booking pin into the random array
+            cin>>dates; //stores the date that the user will be checing into their room
+            date.push_back(dates); //pushes back the date that the user will be checing into their room into the total date
+            randoms++; //incriments pin number so that no room is assignmed the same pin number
+            cout<<"Thank you for booking a room at Vivek's Hotel! Please enter this pin ("<<randoms<<") when you are checking in"<<endl; //displays thank you message
+            random.push_back(randoms); //pushes back the booking pin into the random array
             obj1<<random[i]<<" "; //writes booking pin to the Bookings.txt file
             obj1<<types[i]<<" "; //writes room type to the Bookings.txt file
             obj1<<peoples[i]<<" "; //writes number of people in the room to the Bookings.txt file
             obj1<<date[i]<<" "; //writes check in date to the Bookings.txt file
             obj1<<total[i]<<" "; //writes total after tax to the Bookings.txt file
-            obj1<<hotel.name<<endl; //writes name to the Bookings.txt file
+            obj1<<name<<endl; //writes name to the Bookings.txt file
         }
         ofstream obj15;
         obj15.open("vacant.txt",ios::out);//opens vacant.txt file to write in
@@ -130,17 +153,16 @@ int main()
         obj1.close();
         system("pause");
         system("cls");
-        goto start; //sends user back to the start of the program
     }
-    else if (hotel.option==2) //else if statement that executes if the user wants to checkin (option 2)
-    {
-        string line;
+
+void Hotel::checkin() {
+    string line;
         string close="***";
         int counter=0;
         ifstream obj2;
         obj2.open("Bookings.txt",ios::in); //opend Bookings.txt file to read from
         cout<<"Please enter a booking pin"<<endl; //asks user to enter their booking pin
-        cin>>hotel.pin; //stores the booking pin the user entered
+        cin>>pin; //stores the booking pin the user entered
         vector<vector<string> >results; //stores result after each space
         while (getline(obj2,line))
         {
@@ -149,7 +171,7 @@ int main()
             for(std::string line; iss >> line;)
                 result.push_back(line);
                 results.push_back(result);
-            if (result[0] == hotel.pin) //if statement that executes if the booking pin entered in found in the bookings file (which is stored in result[0])
+            if (result[0] == pin) //if statement that executes if the booking pin entered in found in the bookings file (which is stored in result[0])
             {
                 counter++; //adds one the int counter
                 system("cls");
@@ -170,7 +192,7 @@ int main()
                 obj3<<result[0]<<" "<<result[4]<<" "<<"CHECKED IN"<<" "<<endl; //writes the pin number, amount due per night, and CHECKED IN to the file
                 obj3.close();
                 for (int i=0; i<results.size(); i++){
-                if (results[i][0] == hotel.pin){
+                if (results[i][0] == pin){
                 results[i][0] = close; //sets the information of the room checked into as "***"
                 results[i][1] = close;
                 results[i][2] = close;
@@ -204,17 +226,15 @@ int main()
         }
         system("pause");
         system("cls");
-        goto start; //sends the user to the start of the program
+}
 
-    }
-    else if (hotel.option==3) //else if statement that executes if the user wants to check out (option 3)
-    {
-        string line2;
+void Hotel::checkout() {
+string line2;
         int counter2=0;
         ifstream obj4;
         obj4.open("checkin.txt",ios::in); //opens checkin.txt file to read from
         cout<<"Please enter a booking pin"<<endl;
-        cin>>hotel.pin;
+        cin>>pin;
 
         vector<vector<string> >results2;
         while (getline(obj4,line2))
@@ -225,7 +245,7 @@ int main()
                 result2.push_back(line2);
                 results2.push_back(result2);
             for (int i=0; i<results2.size(); i++){
-            if (results2[i][0] == hotel.pin)
+            if (results2[i][0] == pin)
             {
                 counter2++;
                 stringstream geek(results2[i][1]); //converts the amount the room cost per night from a string to a double (becuse everything stored in a file is a string)
@@ -279,17 +299,16 @@ int main()
         }
         system("pause");
         system("cls");
-        goto start; //sends the use back to the start of the program
-    }
-    else if (hotel.option==4) //else if statement that executes if the user wants to cancel their booking(option 4)
-    {
-        string line;
+}
+
+void Hotel::cancel() {
+    string line;
         string close="***";
         int counter3=0;
         ifstream obj10;
         obj10.open("Bookings.txt",ios::in); //opens Bookings.txt file to read from
         cout<<"Please enter a booking pin"<<endl; //asks the user to enter the booking pin of the room they would like to cancel the booking of
-        cin>>hotel.pin;
+        cin>>pin;
         vector<vector<string> >results;
         while (getline(obj10,line))
         {
@@ -298,11 +317,11 @@ int main()
             for(std::string line; iss >> line;)
                 result.push_back(line);
                 results.push_back(result);
-            if (result[0] == hotel.pin) //if statement the executes of the user pin entred was found in the Bookings.txt file
+            if (result[0] == pin) //if statement the executes of the user pin entred was found in the Bookings.txt file
             {
                 counter3++; //adds 1 to counter3
             for (int i=0; i<results.size(); i++){
-                if (results[i][0] == hotel.pin){
+                if (results[i][0] == pin){
                 results[i][0] = close; //sets the information of the room cancelled as "***"
                 results[i][1] = close;
                 results[i][2] = close;
@@ -356,21 +375,14 @@ int main()
         }
         system("pause");
         system("cls");
-        goto start; //sends the use back to the start of the program
-
-    }
-    else if (hotel.option==5) //if statement that executes if the user wants to exid the program (option 5)
-    {
-        cout<<"Thank you for choosing Vivek's Hotel, come again soon!"<<endl; //displays thank you message
-        return 0; //ends program
-    }
-    else //if statement that executes if the user entered a number that was not 1,2,3,4 or 5
-    {
-        cout<<"Sorry, please enter a valid option"<<endl; //prompts the user to enter a valid option
-        goto start; //sends user to the start of the program
-    }
 }
-void totals (double *tot, char *type, int *people)
+
+void Hotel::exitHotel() {
+    cout<<"Thank you for choosing Vivek's Hotel, come again soon!"<<endl; //displays thank you message
+    return;
+}
+
+void Hotel::totals (double *tot, char *type, int *people)
 {
 
     if (*type=='R' || *type=='r') //if statement that executes if the user wanted a regular room
@@ -383,11 +395,13 @@ void totals (double *tot, char *type, int *people)
         }
     *tot=*tot+(15*(*people)); //adds 15 times number of peoples to tot because there is an additional charge of $15 per person
 }
-void totals (double *tot)
+
+void Hotel::totals (double *tot)
 {
     *tot=*tot*1.13; //multiples tot by 1.13 (this adds tax to the total cost of the room per night)
 }
-void pay(double *amount)
+
+void Hotel::pay(double *amount)
 {
     night:
     int nights;
@@ -421,5 +435,13 @@ void pay(double *amount)
         cout<<"Change due: $"<<changedue<<endl;//displays the change due to the user
 }
 
-
-
+int main()
+{
+    srand (time(NULL));
+  Hotel* hotel = new Hotel();
+  ofstream obj13;
+    obj13.open("vacant.txt",ios::app); //creates a file to store number of rooms that are either booked or checked into (unavailable rooms)
+    obj13.close();
+    hotel->display();
+    delete hotel;
+}
